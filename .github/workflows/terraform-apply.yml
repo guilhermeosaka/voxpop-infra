@@ -1,0 +1,64 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/terraform-apply.yml'
+
+permissions:
+  id-token: write # Required for AWS OIDC
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  TERRAFORM_VERSION: 1.14
+
+jobs:
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/envs/beta
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+
+      - name: Get Outputs
+        id: outputs
+        run: |
+          echo "cluster_name=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_OUTPUT
+          echo "service_name=$(terraform output -raw ecs_service_name)" >> $GITHUB_OUTPUT
+
+      - name: Summary
+        run: |
+          echo "## Terraform Apply Successful ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**ECS Cluster:** ${{ steps.outputs.outputs.cluster_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**ECS Service:** ${{ steps.outputs.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To get the public IP of your task, run:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "aws ecs list-tasks --cluster ${{ steps.outputs.outputs.cluster_name }} --service-name ${{ steps.outputs.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

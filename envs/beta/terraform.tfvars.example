@@ -1,0 +1,45 @@
+# Copy this file to terraform.tfvars and customize the values
+# DO NOT commit terraform.tfvars to version control
+
+# AWS Configuration
+aws_region  = "us-east-1"
+environment = "beta"
+
+# Network Configuration
+vpc_cidr                = "10.0.0.0/16"
+availability_zone_count = 2
+enable_vpc_flow_logs    = false # Set to true if you want network monitoring
+
+# Security Configuration
+# IMPORTANT: Restrict this to your IP address for better security
+# Example: ["203.0.113.0/32"] for a single IP
+allowed_cidr_blocks = ["0.0.0.0/0"]
+
+# GitHub Configuration (for CI/CD)
+github_org  = "guilhermeosaka"
+github_repo = "voxpop"
+
+# Database Configuration
+db_name     = "voxpop"
+db_username = "voxpop_admin"
+db_password = "CHANGE_ME_TO_SECURE_PASSWORD" # REQUIRED: Set a strong password
+
+# RabbitMQ Configuration (optional, disabled by default)
+enable_rabbitmq   = false # Set to true to enable RabbitMQ
+rabbitmq_username = "admin"
+rabbitmq_password = "" # Only needed if enable_rabbitmq = true
+
+# Identity Service Configuration
+identity_container_image = "nginx:latest" # CHANGE: Replace with your identity service image
+identity_container_port  = 8080
+identity_cpu             = 256
+identity_memory          = 512
+
+# Core Service Configuration
+core_container_image = "nginx:latest" # CHANGE: Replace with your core service image
+core_container_port  = 8080
+core_cpu             = 256
+core_memory          = 512
+
+# ALB Configuration
+alb_certificate_arn = "" # Optional: ARN of ACM certificate for HTTPS

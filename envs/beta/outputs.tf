@@ -1,0 +1,83 @@
+# Network Outputs
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = module.network.vpc_id
+}
+
+output "public_subnet_ids" {
+  description = "IDs of public subnets"
+  value       = module.network.public_subnet_ids
+}
+
+output "private_subnet_ids" {
+  description = "IDs of private subnets"
+  value       = module.network.private_subnet_ids
+}
+
+# RDS Outputs
+output "database_endpoint" {
+  description = "RDS database endpoint"
+  value       = module.rds.endpoint
+}
+
+output "database_name" {
+  description = "Database name"
+  value       = module.rds.database_name
+}
+
+# RabbitMQ Outputs
+output "rabbitmq_endpoint" {
+  description = "RabbitMQ endpoint (only if enabled)"
+  value       = var.enable_rabbitmq ? module.rabbitmq[0].internal_endpoint : "RabbitMQ not enabled"
+}
+
+# ALB Outputs
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.alb.alb_dns_name
+}
+
+output "alb_url" {
+  description = "URL to access the ALB"
+  value       = module.alb.alb_url
+}
+
+output "api_endpoints" {
+  description = "API endpoints for services"
+  value = {
+    identity = "${module.alb.alb_url}/identity"
+    core     = "${module.alb.alb_url}/core"
+  }
+}
+
+# ECS Outputs
+output "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  value       = module.ecs_cluster.cluster_name
+}
+
+output "identity_service_name" {
+  description = "Name of the identity service"
+  value       = module.identity_service.service_name
+}
+
+output "core_service_name" {
+  description = "Name of the core service"
+  value       = module.core_service.service_name
+}
+
+# IAM Outputs
+output "github_actions_role_arn" {
+  description = "ARN of the GitHub Actions role for CI/CD"
+  value       = module.iam.github_actions_role_arn
+}
+
+# Instructions
+output "how_to_get_task_ips" {
+  description = "Instructions to get the public IPs of your ECS tasks"
+  value       = <<-EOT
+    Identity Service: aws ecs list-tasks --cluster ${module.ecs_cluster.cluster_name} --service-name ${module.identity_service.service_name}
+    Core Service: aws ecs list-tasks --cluster ${module.ecs_cluster.cluster_name} --service-name ${module.core_service.service_name}
+    Then: aws ecs describe-tasks --cluster ${module.ecs_cluster.cluster_name} --tasks <task-arn>
+  EOT
+}
