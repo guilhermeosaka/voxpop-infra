@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'infra/**'
+      - 'envs/**'
+      - 'modules/**'
       - '.github/workflows/terraform-apply.yml'
 
 permissions:
@@ -22,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: infra/envs/beta
+        working-directory: envs/beta
 
     steps:
       - name: Checkout code
@@ -48,17 +49,16 @@ jobs:
       - name: Get Outputs
         id: outputs
         run: |
+          echo "alb_url=$(terraform output -raw alb_url)" >> $GITHUB_OUTPUT
           echo "cluster_name=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_OUTPUT
-          echo "service_name=$(terraform output -raw ecs_service_name)" >> $GITHUB_OUTPUT
 
       - name: Summary
         run: |
           echo "## Terraform Apply Successful ✅" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**ECS Cluster:** ${{ steps.outputs.outputs.cluster_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "**ECS Service:** ${{ steps.outputs.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**ALB URL:** ${{ steps.outputs.outputs.alb_url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "To get the public IP of your task, run:" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "aws ecs list-tasks --cluster ${{ steps.outputs.outputs.cluster_name }} --service-name ${{ steps.outputs.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "### API Endpoints:" >> $GITHUB_STEP_SUMMARY
+          echo "- Identity: ${{ steps.outputs.outputs.alb_url }}/identity" >> $GITHUB_STEP_SUMMARY
+          echo "- Core: ${{ steps.outputs.outputs.alb_url }}/core" >> $GITHUB_STEP_SUMMARY

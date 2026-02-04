@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'infra/**'
+      - 'envs/**'
+      - 'modules/**'
       - '.github/workflows/terraform-plan.yml'
 
 permissions:
@@ -23,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: infra/envs/beta
+        working-directory: envs/beta
 
     steps:
       - name: Checkout code
