@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "rabbitmq" {
         logDriver = "awslogs"
         options = {
           "awslogs-group"         = aws_cloudwatch_log_group.rabbitmq.name
-          "awslogs-region"        = data.aws_region.current.name
+          "awslogs-region"        = data.aws_region.current.id
           "awslogs-stream-prefix" = "rabbitmq"
         }
       }
@@ -148,7 +148,7 @@ resource "aws_service_discovery_service" "rabbitmq" {
   }
 
   health_check_custom_config {
-    failure_threshold = 1
+    # failure_threshold is deprecated and always set to 1 by AWS
   }
 
   tags = merge(
