@@ -8,6 +8,7 @@ on:
       - 'envs/**'
       - 'modules/**'
       - '.github/workflows/terraform-apply.yml'
+  workflow_dispatch:  # Allows manual testing from Actions tab
 
 permissions:
   id-token: write # Required for AWS OIDC
@@ -21,6 +22,7 @@ jobs:
   terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    environment: beta
     defaults:
       run:
         working-directory: envs/beta
