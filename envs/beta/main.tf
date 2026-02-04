@@ -32,9 +32,9 @@ module "security_groups" {
 module "iam" {
   source = "../../modules/iam"
 
-  environment = var.environment
-  github_org  = var.github_org
-  github_repo = var.github_repo
+  environment  = var.environment
+  github_org   = var.github_org
+  github_repos = var.github_repos
 
   tags = {
     Project = "voxpop"

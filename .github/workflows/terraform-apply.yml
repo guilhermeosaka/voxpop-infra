@@ -5,8 +5,10 @@ on:
     branches:
       - main
     paths:
-      - 'infra/**'
+      - 'envs/**'
+      - 'modules/**'
       - '.github/workflows/terraform-apply.yml'
+  workflow_dispatch:  # Allows manual testing from Actions tab
 
 permissions:
   id-token: write # Required for AWS OIDC
@@ -20,9 +22,10 @@ jobs:
   terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    environment: beta
     defaults:
       run:
-        working-directory: infra/envs/beta
+        working-directory: envs/beta
 
     steps:
       - name: Checkout code
@@ -43,22 +46,24 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
+        env:
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_rabbitmq_password: ${{ secrets.TF_VAR_RABBITMQ_PASSWORD }}
         run: terraform apply -auto-approve -input=false
 
       - name: Get Outputs
         id: outputs
         run: |
+          echo "alb_url=$(terraform output -raw alb_url)" >> $GITHUB_OUTPUT
           echo "cluster_name=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_OUTPUT
-          echo "service_name=$(terraform output -raw ecs_service_name)" >> $GITHUB_OUTPUT
 
       - name: Summary
         run: |
           echo "## Terraform Apply Successful ✅" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**ECS Cluster:** ${{ steps.outputs.outputs.cluster_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "**ECS Service:** ${{ steps.outputs.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**ALB URL:** ${{ steps.outputs.outputs.alb_url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "To get the public IP of your task, run:" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "aws ecs list-tasks --cluster ${{ steps.outputs.outputs.cluster_name }} --service-name ${{ steps.outputs.outputs.service_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "### API Endpoints:" >> $GITHUB_STEP_SUMMARY
+          echo "- Identity: ${{ steps.outputs.outputs.alb_url }}/identity" >> $GITHUB_STEP_SUMMARY
+          echo "- Core: ${{ steps.outputs.outputs.alb_url }}/core" >> $GITHUB_STEP_SUMMARY
