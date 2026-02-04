@@ -119,6 +119,25 @@ module "alb" {
   }
 }
 
+# CloudFront Distribution (Free HTTPS)
+module "cloudfront" {
+  source = "../../modules/cloudfront"
+
+  environment  = var.environment
+  alb_dns_name = module.alb.alb_dns_name
+
+  # Don't cache API responses by default
+  default_ttl = 0
+  max_ttl     = 0
+
+  # Use cheapest price class (US, Canada, Europe)
+  price_class = "PriceClass_100"
+
+  tags = {
+    Project = "voxpop"
+  }
+}
+
 # Identity Service (voxpop-identity)
 module "identity_service" {
   source = "../../modules/ecs-service"
