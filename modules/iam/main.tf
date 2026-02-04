@@ -138,7 +138,8 @@ resource "aws_iam_role_policy" "github_actions_terraform" {
           "s3:*",
           "rds:*",
           "cloudwatch:*",
-          "elasticloadbalancing:*"
+          "elasticloadbalancing:*",
+          "cloudfront:*"
         ]
         Resource = "*"
       }
