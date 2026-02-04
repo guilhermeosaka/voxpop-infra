@@ -50,6 +50,25 @@ output "api_endpoints" {
   }
 }
 
+# CloudFront Outputs (HTTPS URLs)
+output "cloudfront_url" {
+  description = "CloudFront HTTPS URL (use this for secure access)"
+  value       = module.cloudfront.cloudfront_url
+}
+
+output "cloudfront_domain" {
+  description = "CloudFront domain name"
+  value       = module.cloudfront.cloudfront_domain_name
+}
+
+output "https_api_endpoints" {
+  description = "HTTPS API endpoints via CloudFront"
+  value = {
+    identity = "${module.cloudfront.cloudfront_url}/identity"
+    core     = "${module.cloudfront.cloudfront_url}/core"
+  }
+}
+
 # ECS Outputs
 output "ecs_cluster_name" {
   description = "Name of the ECS cluster"
