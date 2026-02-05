@@ -96,12 +96,12 @@ output "how_to_get_task_ips" {
     Then: aws ecs describe-tasks --cluster ${module.ecs_cluster.cluster_name} --tasks <task-arn>
   EOT
 }
-output "eic_endpoint_id" {
-  description = "ID of the EC2 Instance Connect Endpoint"
-  value       = module.network.eic_endpoint_id
+output "bastion_instance_id" {
+  description = "ID of the Bastion Host"
+  value       = module.bastion.instance_id
 }
 
-output "connect_to_db_command" {
-  description = "Command to connect to the database via EIC Endpoint"
-  value       = "aws ec2-instance-connect open-tunnel --instance-connect-endpoint-id ${module.network.eic_endpoint_id} --remote-port 5432 --local-port 5432 --region us-east-1"
+output "ssm_connect_command" {
+  description = "Command to start SSM Port Forwarding session"
+  value       = "aws ssm start-session --target ${module.bastion.instance_id} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters '{\"host\":[\"${module.rds.address}\"],\"portNumber\":[\"5432\"], \"localPortNumber\":[\"4321\"]}'"
 }
