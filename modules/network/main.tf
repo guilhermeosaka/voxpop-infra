@@ -163,4 +163,39 @@ resource "aws_vpc_endpoint" "s3" {
 
 # Note: ECR VPC endpoints removed for cost optimization in beta
 # ECS tasks in public subnets can pull images via internet
-# For production, consider adding these back when using private subnets with NAT Gateway
+
+# --------------------------------------------------------------------------------------------------
+# EC2 Instance Connect Endpoint (Secure Tunneling)
+# --------------------------------------------------------------------------------------------------
+
+# Security Group for the EIC Endpoint
+resource "aws_security_group" "eic_endpoint" {
+  name        = "voxpop-${var.environment}-eic-endpoint-sg"
+  description = "Security group for EC2 Instance Connect Endpoint"
+  vpc_id      = aws_vpc.this.id
+
+  # Allow outbound traffic to the database port (5432)
+  # The tunnel initiates the connection to the DB
+  egress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr] # Allow connecting to anything in VPC on port 5432
+    description = "Allow EIC Endpoint to connect to Postgres"
+  }
+
+  tags = {
+    Name = "voxpop-${var.environment}-eic-endpoint-sg"
+  }
+}
+
+# The Endpoint itself
+resource "aws_ec2_instance_connect_endpoint" "this" {
+  subnet_id          = aws_subnet.private[0].id # Place in the first private subnet
+  security_group_ids = [aws_security_group.eic_endpoint.id]
+
+  tags = {
+    Name = "voxpop-${var.environment}-eic-endpoint"
+  }
+}
+

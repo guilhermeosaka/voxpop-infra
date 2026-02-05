@@ -25,8 +25,10 @@ variable "tags" {
   default     = {}
 }
 
-variable "enable_rabbitmq" {
-  description = "Enable RabbitMQ security group"
-  type        = bool
-  default     = false
+
+
+variable "eic_endpoint_sg_id" {
+  description = "Security Group ID of the EC2 Instance Connect Endpoint (optional)"
+  type        = string
+  default     = ""
 }

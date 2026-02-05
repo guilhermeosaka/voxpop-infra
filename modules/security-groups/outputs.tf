@@ -13,7 +13,4 @@ output "database_sg_id" {
   value       = aws_security_group.database.id
 }
 
-output "rabbitmq_sg_id" {
-  description = "ID of the RabbitMQ security group"
-  value       = var.enable_rabbitmq ? aws_security_group.rabbitmq[0].id : null
-}
+

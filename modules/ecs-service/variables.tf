@@ -80,6 +80,12 @@ variable "target_group_arn" {
   default     = ""
 }
 
+variable "secrets" {
+  description = "Secrets to inject into the container (map of env var name to secret ARN)"
+  type        = map(string)
+  default     = {}
+}
+
 variable "environment_variables" {
   description = "Environment variables for the container"
   type        = map(string)

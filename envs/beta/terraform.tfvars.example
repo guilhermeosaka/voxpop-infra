@@ -24,10 +24,7 @@ db_name     = "voxpop"
 db_username = "voxpop_admin"
 db_password = "CHANGE_ME_TO_SECURE_PASSWORD" # REQUIRED: Set a strong password
 
-# RabbitMQ Configuration (optional, disabled by default)
-enable_rabbitmq   = false # Set to true to enable RabbitMQ
-rabbitmq_username = "admin"
-rabbitmq_password = "" # Only needed if enable_rabbitmq = true
+
 
 # Identity Service Configuration
 identity_container_image = "nginx:latest" # CHANGE: Replace with your identity service image

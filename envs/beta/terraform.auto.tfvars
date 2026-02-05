@@ -15,8 +15,7 @@ github_repos = ["voxpop", "voxpop-infra"]
 db_name     = "voxpop"
 db_username = "voxpop_admin"
 
-enable_rabbitmq   = false
-rabbitmq_username = "admin"
+
 
 identity_container_image = "nginx:latest"
 identity_container_port  = 80

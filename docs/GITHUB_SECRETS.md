@@ -18,9 +18,7 @@ Example: `arn:aws:iam::303155796105:role/voxpop-beta-github-actions-role`
 **Value**: Your RDS database password (same as in `terraform.tfvars`)  
 Example: `MySecretPassword123!`
 
-### 3. RabbitMQ Password (Optional)
-**Name**: `TF_VAR_RABBITMQ_PASSWORD`  
-**Value**: Your RabbitMQ password (only needed if `enable_rabbitmq = true`)  
+
 Example: `MySecretPassword123!`
 
 ---
@@ -42,7 +40,7 @@ GitHub Actions workflows use these secrets as environment variables:
 - name: Terraform Plan
   env:
     TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
-    TF_VAR_rabbitmq_password: ${{ secrets.TF_VAR_RABBITMQ_PASSWORD }}
+
   run: terraform plan
 ```
 
@@ -69,7 +67,6 @@ terraform output github_actions_role_arn
 # 2. Add secrets to GitHub (via UI)
 # - AWS_ROLE_ARN: <output from above>
 # - TF_VAR_DB_PASSWORD: <your db password>
-# - TF_VAR_RABBITMQ_PASSWORD: <your rabbitmq password> (optional)
 
 # 3. Push changes to trigger workflow
 git push

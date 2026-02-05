@@ -65,25 +65,7 @@ variable "db_password" {
   sensitive   = true
 }
 
-# RabbitMQ Variables
-variable "enable_rabbitmq" {
-  description = "Enable RabbitMQ deployment"
-  type        = bool
-  default     = false
-}
 
-variable "rabbitmq_username" {
-  description = "RabbitMQ admin username"
-  type        = string
-  default     = "admin"
-}
-
-variable "rabbitmq_password" {
-  description = "RabbitMQ admin password"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
 
 # Identity Service Variables
 variable "identity_container_image" {
