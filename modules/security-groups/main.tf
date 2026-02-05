@@ -90,15 +90,15 @@ resource "aws_security_group" "database" {
     security_groups = [aws_security_group.ecs_tasks.id]
   }
 
-  # Allow PostgreSQL from EIC Endpoint (if enabled)
+  # Allow PostgreSQL from Bastion Host (SSM Tunnel)
   dynamic "ingress" {
-    for_each = var.eic_endpoint_sg_id != "" ? [1] : []
+    for_each = var.bastion_sg_id != "" ? [1] : []
     content {
-      description     = "PostgreSQL from EIC Endpoint"
+      description     = "PostgreSQL from Bastion Host"
       from_port       = 5432
       to_port         = 5432
       protocol        = "tcp"
-      security_groups = [var.eic_endpoint_sg_id]
+      security_groups = [var.bastion_sg_id]
     }
   }
 

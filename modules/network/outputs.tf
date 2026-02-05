@@ -32,12 +32,6 @@ output "internet_gateway_id" {
   description = "ID of the Internet Gateway"
   value       = aws_internet_gateway.this.id
 }
-output "eic_endpoint_id" {
-  description = "ID of the EC2 Instance Connect Endpoint"
-  value       = aws_ec2_instance_connect_endpoint.this.id
-}
 
-output "eic_endpoint_sg_id" {
-  description = "ID of the Security Group for the EIC Endpoint"
-  value       = aws_security_group.eic_endpoint.id
-}
+
+

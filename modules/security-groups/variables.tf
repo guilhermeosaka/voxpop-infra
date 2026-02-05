@@ -27,8 +27,8 @@ variable "tags" {
 
 
 
-variable "eic_endpoint_sg_id" {
-  description = "Security Group ID of the EC2 Instance Connect Endpoint (optional)"
+variable "bastion_sg_id" {
+  description = "Security Group ID of the Bastion Host (optional)"
   type        = string
   default     = ""
 }

@@ -21,7 +21,7 @@ module "security_groups" {
   vpc_id              = module.network.vpc_id
   vpc_cidr            = module.network.vpc_cidr
   allowed_cidr_blocks = var.allowed_cidr_blocks
-  eic_endpoint_sg_id  = module.network.eic_endpoint_sg_id
+  bastion_sg_id       = module.bastion.security_group_id
 
   tags = {
     Project = "voxpop"
@@ -35,6 +35,20 @@ module "iam" {
   environment  = var.environment
   github_org   = var.github_org
   github_repos = var.github_repos
+
+  tags = {
+    Project = "voxpop"
+  }
+}
+
+
+# Bastion Host Module (SSM Access)
+module "bastion" {
+  source = "../../modules/bastion"
+
+  environment = var.environment
+  vpc_id      = module.network.vpc_id
+  subnet_id   = module.network.public_subnet_ids[0] # Place in public subnet for SSM access (no NAT GW)
 
   tags = {
     Project = "voxpop"
