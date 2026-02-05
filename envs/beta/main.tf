@@ -21,7 +21,7 @@ module "security_groups" {
   vpc_id              = module.network.vpc_id
   vpc_cidr            = module.network.vpc_cidr
   allowed_cidr_blocks = var.allowed_cidr_blocks
-  enable_rabbitmq     = var.enable_rabbitmq
+  eic_endpoint_sg_id  = module.network.eic_endpoint_sg_id
 
   tags = {
     Project = "voxpop"
@@ -76,26 +76,7 @@ module "ecs_cluster" {
   }
 }
 
-# RabbitMQ Module (Optional)
-module "rabbitmq" {
-  count  = var.enable_rabbitmq ? 1 : 0
-  source = "../../modules/rabbitmq"
 
-  environment             = var.environment
-  vpc_id                  = module.network.vpc_id
-  cluster_id              = module.ecs_cluster.cluster_id
-  subnet_ids              = module.network.private_subnet_ids
-  security_group_ids      = [module.security_groups.rabbitmq_sg_id]
-  task_execution_role_arn = module.iam.ecs_task_execution_role_arn
-  task_role_arn           = module.iam.ecs_task_role_arn
-
-  rabbitmq_username = var.rabbitmq_username
-  rabbitmq_password = var.rabbitmq_password
-
-  tags = {
-    Project = "voxpop"
-  }
-}
 
 # Application Load Balancer
 module "alb" {
@@ -138,6 +119,41 @@ module "cloudfront" {
   }
 }
 
+
+# --------------------------------------------------------------------------------------------------
+# Secrets Manager
+# --------------------------------------------------------------------------------------------------
+
+
+
+# Identity DB Connection String Secret
+resource "aws_secretsmanager_secret" "identity_db_connection" {
+  name                    = "voxpop-${var.environment}-identity-db-connection-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  recovery_window_in_days = 0
+  tags = {
+    Project = "voxpop"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "identity_db_connection" {
+  secret_id     = aws_secretsmanager_secret.identity_db_connection.id
+  secret_string = "Host=${module.rds.address};Port=${module.rds.port};Database=${module.rds.database_name};Username=${var.db_username};Password=${var.db_password}"
+}
+
+# Core DB Connection String Secret
+resource "aws_secretsmanager_secret" "core_db_connection" {
+  name                    = "voxpop-${var.environment}-core-db-connection-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  recovery_window_in_days = 0
+  tags = {
+    Project = "voxpop"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "core_db_connection" {
+  secret_id     = aws_secretsmanager_secret.core_db_connection.id
+  secret_string = "Host=${module.rds.address};Port=${module.rds.port};Database=${module.rds.database_name};Username=${var.db_username};Password=${var.db_password}"
+}
+
 # Identity Service (voxpop-identity)
 module "identity_service" {
   source = "../../modules/ecs-service"
@@ -162,8 +178,10 @@ module "identity_service" {
   environment_variables = {
     ENVIRONMENT  = var.environment
     SERVICE_NAME = "voxpop-identity"
-    DATABASE_URL = "postgresql://${var.db_username}:${var.db_password}@${module.rds.address}:${module.rds.port}/${module.rds.database_name}"
-    RABBITMQ_URL = var.enable_rabbitmq ? module.rabbitmq[0].connection_string : ""
+  }
+
+  secrets = {
+    ConnectionStrings__IdentityDb = aws_secretsmanager_secret.identity_db_connection.arn
   }
 
   tags = {
@@ -195,8 +213,10 @@ module "core_service" {
   environment_variables = {
     ENVIRONMENT  = var.environment
     SERVICE_NAME = "voxpop-core"
-    DATABASE_URL = "postgresql://${var.db_username}:${var.db_password}@${module.rds.address}:${module.rds.port}/${module.rds.database_name}"
-    RABBITMQ_URL = var.enable_rabbitmq ? module.rabbitmq[0].connection_string : ""
+  }
+
+  secrets = {
+    ConnectionStrings__CoreDb = aws_secretsmanager_secret.core_db_connection.arn
   }
 
   tags = {

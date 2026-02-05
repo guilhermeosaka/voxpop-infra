@@ -194,3 +194,25 @@ resource "aws_iam_role_policy" "github_actions_ecs_deploy" {
     ]
   })
 }
+# Allow ECS Task Execution role to read secrets
+resource "aws_iam_role_policy" "ecs_execution_secrets" {
+  name = "voxpop-${var.environment}-ecs-execution-secrets-policy"
+  role = aws_iam_role.ecs_task_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "kms:Decrypt"
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:*:*:secret:voxpop-${var.environment}-db-password-*",
+
+        ]
+      }
+    ]
+  })
+}

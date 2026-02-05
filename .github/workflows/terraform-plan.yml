@@ -59,7 +59,6 @@ jobs:
         id: plan
         env:
           TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
-          TF_VAR_rabbitmq_password: ${{ secrets.TF_VAR_RABBITMQ_PASSWORD }}
         run: terraform plan -no-color -input=false
         continue-on-error: true
 

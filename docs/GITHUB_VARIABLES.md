@@ -21,8 +21,7 @@ TF_VAR_github_repos = ["voxpop", "voxpop-infra"]
 TF_VAR_db_name = voxpop
 TF_VAR_db_username = voxpop_admin
 
-TF_VAR_enable_rabbitmq = false
-TF_VAR_rabbitmq_username = admin
+
 
 TF_VAR_identity_container_image = nginx:latest
 TF_VAR_identity_container_port = 80
@@ -42,7 +41,7 @@ TF_VAR_alb_certificate_arn = ""
 In the **beta** environment:
 ```
 TF_VAR_DB_PASSWORD = "[PASSWORD]"
-TF_VAR_RABBITMQ_PASSWORD = (empty or your password)
+
 AWS_ROLE_ARN = arn:aws:iam::303155796105:role/voxpop-beta-github-actions-role
 ```
 
@@ -73,9 +72,7 @@ db_name     = "voxpop"
 db_username = "voxpop_admin"
 # db_password from secret
 
-enable_rabbitmq   = false
-rabbitmq_username = "admin"
-# rabbitmq_password from secret
+
 
 identity_container_image = "nginx:latest"
 identity_container_port  = 80

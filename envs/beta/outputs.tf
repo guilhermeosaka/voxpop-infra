@@ -25,11 +25,7 @@ output "database_name" {
   value       = module.rds.database_name
 }
 
-# RabbitMQ Outputs
-output "rabbitmq_endpoint" {
-  description = "RabbitMQ endpoint (only if enabled)"
-  value       = var.enable_rabbitmq ? module.rabbitmq[0].internal_endpoint : "RabbitMQ not enabled"
-}
+
 
 # ALB Outputs
 output "alb_dns_name" {
@@ -99,4 +95,13 @@ output "how_to_get_task_ips" {
     Core Service: aws ecs list-tasks --cluster ${module.ecs_cluster.cluster_name} --service-name ${module.core_service.service_name}
     Then: aws ecs describe-tasks --cluster ${module.ecs_cluster.cluster_name} --tasks <task-arn>
   EOT
+}
+output "eic_endpoint_id" {
+  description = "ID of the EC2 Instance Connect Endpoint"
+  value       = module.network.eic_endpoint_id
+}
+
+output "connect_to_db_command" {
+  description = "Command to connect to the database via EIC Endpoint"
+  value       = "aws ec2-instance-connect open-tunnel --instance-connect-endpoint-id ${module.network.eic_endpoint_id} --remote-port 5432 --local-port 5432 --region us-east-1"
 }

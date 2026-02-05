@@ -90,6 +90,18 @@ resource "aws_security_group" "database" {
     security_groups = [aws_security_group.ecs_tasks.id]
   }
 
+  # Allow PostgreSQL from EIC Endpoint (if enabled)
+  dynamic "ingress" {
+    for_each = var.eic_endpoint_sg_id != "" ? [1] : []
+    content {
+      description     = "PostgreSQL from EIC Endpoint"
+      from_port       = 5432
+      to_port         = 5432
+      protocol        = "tcp"
+      security_groups = [var.eic_endpoint_sg_id]
+    }
+  }
+
   # No outbound rules needed for database
   egress {
     description = "Allow all outbound"
@@ -109,46 +121,4 @@ resource "aws_security_group" "database" {
   )
 }
 
-# Security Group for RabbitMQ
-resource "aws_security_group" "rabbitmq" {
-  count       = var.enable_rabbitmq ? 1 : 0
-  name        = "voxpop-${var.environment}-rabbitmq-sg"
-  description = "Security group for RabbitMQ instances"
-  vpc_id      = var.vpc_id
 
-  # Allow AMQP from ECS tasks
-  ingress {
-    description     = "AMQP from ECS tasks"
-    from_port       = 5672
-    to_port         = 5672
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ecs_tasks.id]
-  }
-
-  # Allow RabbitMQ management UI from allowed CIDR blocks
-  ingress {
-    description = "RabbitMQ management UI"
-    from_port   = 15672
-    to_port     = 15672
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-  }
-
-  # Allow all outbound traffic
-  egress {
-    description = "Allow all outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(
-    var.tags,
-    {
-      Name        = "voxpop-${var.environment}-rabbitmq-sg"
-      Environment = var.environment
-      ManagedBy   = "terraform"
-    }
-  )
-}
