@@ -34,71 +34,31 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   # Default Cache Behavior
+  # CloudFront Function for Path Rewriting
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD"]
     target_origin_id = "alb"
 
     forwarded_values {
       query_string = true
-      headers      = ["Host", "Authorization", "Accept", "Content-Type"]
+      headers      = ["*"] # Forward all headers including Host
 
       cookies {
         forward = "all"
       }
     }
 
-    viewer_protocol_policy = "redirect-to-https" # Force HTTPS
+    viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = var.default_ttl
     max_ttl                = var.max_ttl
     compress               = true
-  }
 
-  # Cache behavior for /identity path
-  ordered_cache_behavior {
-    path_pattern     = "/identity/*"
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "alb"
-
-    forwarded_values {
-      query_string = true
-      headers      = ["Host", "Authorization", "Accept", "Content-Type"]
-
-      cookies {
-        forward = "all"
-      }
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.router.arn
     }
-
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 0 # Don't cache API responses
-    max_ttl                = 0
-    compress               = true
-  }
-
-  # Cache behavior for /core path
-  ordered_cache_behavior {
-    path_pattern     = "/core/*"
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "alb"
-
-    forwarded_values {
-      query_string = true
-      headers      = ["Host", "Authorization", "Accept", "Content-Type"]
-
-      cookies {
-        forward = "all"
-      }
-    }
-
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 0 # Don't cache API responses
-    max_ttl                = 0
-    compress               = true
   }
 
   # Viewer Certificate (CloudFront default SSL)
@@ -122,4 +82,12 @@ resource "aws_cloudfront_distribution" "this" {
       ManagedBy   = "terraform"
     }
   )
+}
+
+resource "aws_cloudfront_function" "router" {
+  name    = "voxpop-${var.environment}-router"
+  runtime = "cloudfront-js-1.0"
+  comment = "Rewrites paths for service routing"
+  publish = true
+  code    = file("${path.module}/router.js")
 }

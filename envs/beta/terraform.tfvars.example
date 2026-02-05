@@ -40,3 +40,8 @@ core_memory          = 512
 
 # ALB Configuration
 alb_certificate_arn = "" # Optional: ARN of ACM certificate for HTTPS
+
+# Twilio configuration
+twilio_account_sid = "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+twilio_auth_token  = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+twilio_service_sid = "ISxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

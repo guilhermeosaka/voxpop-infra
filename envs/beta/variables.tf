@@ -5,9 +5,8 @@ variable "aws_region" {
 }
 
 variable "environment" {
-  description = "Environment name"
+  description = "Environment name (e.g. beta, prod)"
   type        = string
-  default     = "beta"
 }
 
 variable "vpc_cidr" {
@@ -122,4 +121,29 @@ variable "alb_certificate_arn" {
   description = "ARN of ACM certificate for HTTPS (leave empty for HTTP only)"
   type        = string
   default     = ""
+}
+
+# Twilio Credentials
+variable "twilio_account_sid" {
+  description = "Twilio Account SID"
+  type        = string
+  sensitive   = true
+}
+
+variable "twilio_auth_token" {
+  description = "Twilio Auth Token"
+  type        = string
+  sensitive   = true
+}
+
+variable "twilio_service_sid" {
+  description = "Twilio Service SID (Verify)"
+  type        = string
+  sensitive   = true
+}
+
+variable "jwt_key" {
+  description = "JWT Key"
+  type        = string
+  sensitive   = true
 }

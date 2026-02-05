@@ -64,7 +64,7 @@ module "rds" {
   subnet_ids         = module.network.private_subnet_ids
   security_group_ids = [module.security_groups.database_sg_id]
 
-  db_name     = var.db_name
+  # No db_name - let EF migrations create identitydb and coredb
   db_username = var.db_username
   db_password = var.db_password
 
@@ -151,7 +151,7 @@ resource "aws_secretsmanager_secret" "identity_db_connection" {
 
 resource "aws_secretsmanager_secret_version" "identity_db_connection" {
   secret_id     = aws_secretsmanager_secret.identity_db_connection.id
-  secret_string = "Host=${module.rds.address};Port=${module.rds.port};Database=${module.rds.database_name};Username=${var.db_username};Password=${var.db_password}"
+  secret_string = "Host=${module.rds.address};Port=${module.rds.port};Database=identity_db;Username=${var.db_username};Password=${var.db_password}"
 }
 
 # Core DB Connection String Secret
@@ -165,7 +165,52 @@ resource "aws_secretsmanager_secret" "core_db_connection" {
 
 resource "aws_secretsmanager_secret_version" "core_db_connection" {
   secret_id     = aws_secretsmanager_secret.core_db_connection.id
-  secret_string = "Host=${module.rds.address};Port=${module.rds.port};Database=${module.rds.database_name};Username=${var.db_username};Password=${var.db_password}"
+  secret_string = "Host=${module.rds.address};Port=${module.rds.port};Database=core_db;Username=${var.db_username};Password=${var.db_password}"
+}
+
+# --------------------------------------------------------------------------------------------------
+# Twilio Secrets
+# --------------------------------------------------------------------------------------------------
+
+resource "aws_secretsmanager_secret" "twilio_account_sid" {
+  name                    = "voxpop-${var.environment}-twilio-account-sid-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  recovery_window_in_days = 0
+  tags                    = { Project = "voxpop" }
+}
+resource "aws_secretsmanager_secret_version" "twilio_account_sid" {
+  secret_id     = aws_secretsmanager_secret.twilio_account_sid.id
+  secret_string = var.twilio_account_sid
+}
+
+resource "aws_secretsmanager_secret" "twilio_auth_token" {
+  name                    = "voxpop-${var.environment}-twilio-auth-token-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  recovery_window_in_days = 0
+  tags                    = { Project = "voxpop" }
+}
+resource "aws_secretsmanager_secret_version" "twilio_auth_token" {
+  secret_id     = aws_secretsmanager_secret.twilio_auth_token.id
+  secret_string = var.twilio_auth_token
+}
+
+resource "aws_secretsmanager_secret" "twilio_service_sid" {
+  name                    = "voxpop-${var.environment}-twilio-service-sid-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  recovery_window_in_days = 0
+  tags                    = { Project = "voxpop" }
+}
+resource "aws_secretsmanager_secret_version" "twilio_service_sid" {
+  secret_id     = aws_secretsmanager_secret.twilio_service_sid.id
+  secret_string = var.twilio_service_sid
+}
+
+# JWT Secret Key
+resource "aws_secretsmanager_secret" "jwt_key" {
+  name                    = "voxpop-${var.environment}-jwt-key-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  recovery_window_in_days = 0
+  tags                    = { Project = "voxpop" }
+}
+resource "aws_secretsmanager_secret_version" "jwt_key" {
+  secret_id     = aws_secretsmanager_secret.jwt_key.id
+  secret_string = var.jwt_key
 }
 
 # Identity Service (voxpop-identity)
@@ -189,13 +234,21 @@ module "identity_service" {
   assign_public_ip = true
   target_group_arn = module.alb.identity_target_group_arn
 
+  # Give 3 minutes for migrations to complete before health checks start
+  health_check_grace_period_seconds = 180
+
   environment_variables = {
-    ENVIRONMENT  = var.environment
-    SERVICE_NAME = "voxpop-identity"
+    ASPNETCORE_ENVIRONMENT = "Beta"
+    SERVICE_NAME           = "voxpop-identity"
+    ENVIRONMENT            = var.environment
   }
 
   secrets = {
     ConnectionStrings__IdentityDb = aws_secretsmanager_secret.identity_db_connection.arn
+    Twilio__AccountSid            = aws_secretsmanager_secret.twilio_account_sid.arn
+    Twilio__AuthToken             = aws_secretsmanager_secret.twilio_auth_token.arn
+    Twilio__ServiceSid            = aws_secretsmanager_secret.twilio_service_sid.arn
+    Jwt__Key                      = aws_secretsmanager_secret.jwt_key.arn
   }
 
   tags = {
@@ -224,13 +277,18 @@ module "core_service" {
   assign_public_ip = true
   target_group_arn = module.alb.core_target_group_arn
 
+  # Give 3 minutes for migrations/seeding to complete before health checks start
+  health_check_grace_period_seconds = 180
+
   environment_variables = {
-    ENVIRONMENT  = var.environment
-    SERVICE_NAME = "voxpop-core"
+    ASPNETCORE_ENVIRONMENT = "Beta"
+    SERVICE_NAME           = "voxpop-core"
+    ENVIRONMENT            = var.environment
   }
 
   secrets = {
     ConnectionStrings__CoreDb = aws_secretsmanager_secret.core_db_connection.arn
+    Jwt__Key                  = aws_secretsmanager_secret.jwt_key.arn
   }
 
   tags = {

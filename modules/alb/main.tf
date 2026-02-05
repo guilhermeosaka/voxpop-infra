@@ -159,8 +159,9 @@ resource "aws_lb_listener_rule" "identity_http" {
   }
 
   condition {
-    path_pattern {
-      values = ["/identity/*", "/identity"]
+    http_header {
+      http_header_name = "x-service-name"
+      values           = ["voxpop-identity"]
     }
   }
 
@@ -185,8 +186,9 @@ resource "aws_lb_listener_rule" "core_http" {
   }
 
   condition {
-    path_pattern {
-      values = ["/core/*", "/core", "/*"]
+    http_header {
+      http_header_name = "x-service-name"
+      values           = ["voxpop-core"]
     }
   }
 
@@ -212,8 +214,9 @@ resource "aws_lb_listener_rule" "identity_https" {
   }
 
   condition {
-    path_pattern {
-      values = ["/identity/*", "/identity"]
+    http_header {
+      http_header_name = "x-service-name"
+      values           = ["voxpop-identity"]
     }
   }
 
@@ -239,8 +242,9 @@ resource "aws_lb_listener_rule" "core_https" {
   }
 
   condition {
-    path_pattern {
-      values = ["/core/*", "/core", "/*"]
+    http_header {
+      http_header_name = "x-service-name"
+      values           = ["voxpop-core"]
     }
   }
 

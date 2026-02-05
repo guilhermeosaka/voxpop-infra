@@ -18,12 +18,12 @@ db_username = "voxpop_admin"
 
 
 identity_container_image = "nginx:latest"
-identity_container_port  = 80
+identity_container_port  = 8080
 identity_cpu             = 256
 identity_memory          = 512
 
 core_container_image = "nginx:latest"
-core_container_port  = 80
+core_container_port  = 8080
 core_cpu             = 256
 core_memory          = 512
 

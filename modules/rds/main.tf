@@ -19,7 +19,7 @@ resource "aws_db_instance" "this" {
   storage_type      = "gp3"
   storage_encrypted = true
 
-  db_name  = var.db_name
+  db_name  = var.db_name # Optional - if null, no initial database is created
   username = var.db_username
   password = var.db_password
   port     = 5432

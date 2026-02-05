@@ -1,5 +1,5 @@
 variable "environment" {
-  description = "Environment name (e.g., beta, prod)"
+  description = "Environment name"
   type        = string
 }
 
@@ -96,4 +96,10 @@ variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
   default     = {}
+}
+
+variable "health_check_grace_period_seconds" {
+  description = "Time in seconds to wait before starting health checks (allows time for migrations/seeding)"
+  type        = number
+  default     = 0
 }

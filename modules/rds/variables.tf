@@ -19,9 +19,9 @@ variable "security_group_ids" {
 }
 
 variable "db_name" {
-  description = "Name of the database to create"
+  description = "Name of the initial database to create (optional - set to null to skip initial DB creation)"
   type        = string
-  default     = "voxpop"
+  default     = null
 }
 
 variable "db_username" {

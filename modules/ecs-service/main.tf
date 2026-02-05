@@ -85,6 +85,9 @@ resource "aws_ecs_service" "this" {
     }
   }
 
+  # Health check grace period - gives time for migrations/seeding before health checks start
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
+
   # Enable ECS Exec for debugging (optional, can be disabled for production)
   enable_execute_command = true
 
@@ -93,7 +96,8 @@ resource "aws_ecs_service" "this" {
   }
 
   # Ignore changes to desired_count for auto-scaling
+  # Ignore task_definition to allow external CD pipeline to manage images
   lifecycle {
-    ignore_changes = [desired_count]
+    ignore_changes = [desired_count, task_definition]
   }
 }
