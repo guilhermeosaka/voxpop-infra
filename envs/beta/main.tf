@@ -295,3 +295,15 @@ module "core_service" {
     Project = "voxpop"
   }
 }
+
+# --------------------------------------------------------------------------------------------------
+# Vercel Project (Frontend)
+# --------------------------------------------------------------------------------------------------
+
+module "vercel_project" {
+  source = "../../modules/vercel-project"
+
+  project_name = "voxpop-web"
+  github_repo  = "guilhermeosaka/voxpop-web"
+  api_url      = module.cloudfront.cloudfront_url
+}
