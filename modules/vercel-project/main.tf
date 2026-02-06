@@ -16,9 +16,16 @@ resource "vercel_project" "this" {
   }
 }
 
-resource "vercel_project_environment_variable" "api_url" {
+resource "vercel_project_environment_variable" "core_api_url" {
   project_id = vercel_project.this.id
-  key        = "NEXT_PUBLIC_API_URL"
-  value      = var.api_url
+  key        = "NEXT_PUBLIC_CORE_API_URL"
+  value      = var.core_api_url
+  target     = ["production", "preview", "development"]
+}
+
+resource "vercel_project_environment_variable" "identity_api_url" {
+  project_id = vercel_project.this.id
+  key        = "NEXT_PUBLIC_IDENTITY_API_URL"
+  value      = var.identity_api_url
   target     = ["production", "preview", "development"]
 }

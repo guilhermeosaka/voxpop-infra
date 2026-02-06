@@ -8,7 +8,12 @@ variable "github_repo" {
   type        = string
 }
 
-variable "api_url" {
-  description = "API URL to inject as NEXT_PUBLIC_API_URL"
+variable "core_api_url" {
+  description = "Core API URL to inject as NEXT_PUBLIC_CORE_API_URL"
+  type        = string
+}
+
+variable "identity_api_url" {
+  description = "Identity API URL to inject as NEXT_PUBLIC_IDENTITY_API_URL"
   type        = string
 }

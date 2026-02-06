@@ -303,7 +303,8 @@ module "core_service" {
 module "vercel_project" {
   source = "../../modules/vercel-project"
 
-  project_name = "voxpop-web"
-  github_repo  = "guilhermeosaka/voxpop-web"
-  api_url      = module.cloudfront.cloudfront_url
+  project_name     = "voxpop-web"
+  github_repo      = "guilhermeosaka/voxpop-web"
+  core_api_url     = "${module.cloudfront.cloudfront_url}/core"
+  identity_api_url = "${module.cloudfront.cloudfront_url}/identity"
 }
