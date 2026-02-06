@@ -59,10 +59,10 @@ jobs:
         id: plan
         env:
           TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
-          TF_VAR_JWT_KEY: ${{ secrets.TF_VAR_JWT_KEY }}
-          TF_VAR_TWILIO_ACCOUNT_SID: ${{ secrets.TF_VAR_TWILIO_ACCOUNT_SID }}
-          TF_VAR_TWILIO_AUTH_TOKEN: ${{ secrets.TF_VAR_TWILIO_AUTH_TOKEN }}
-          TF_VAR_TWILIO_SERVICE_SID: ${{ secrets.TF_VAR_TWILIO_SERVICE_SID }}
+          TF_VAR_jwt_key: ${{ secrets.TF_VAR_JWT_KEY }}
+          TF_VAR_twilio_account_sid: ${{ secrets.TF_VAR_TWILIO_ACCOUNT_SID }}
+          TF_VAR_twilio_auth_token: ${{ secrets.TF_VAR_TWILIO_AUTH_TOKEN }}
+          TF_VAR_twilio_service_sid: ${{ secrets.TF_VAR_TWILIO_SERVICE_SID }}
         run: terraform plan -no-color -input=false
         continue-on-error: true
 
