@@ -42,7 +42,7 @@ variable "github_org" {
 variable "github_repos" {
   description = "List of GitHub repositories allowed to use OIDC role"
   type        = list(string)
-  default     = ["voxpop", "voxpop-infra"]
+  default     = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 }
 
 # RDS Variables

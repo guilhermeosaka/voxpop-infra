@@ -10,7 +10,7 @@ enable_vpc_flow_logs    = false
 allowed_cidr_blocks     = ["0.0.0.0/0"]
 
 github_org   = "guilhermeosaka"
-github_repos = ["voxpop", "voxpop-infra"]
+github_repos = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 
 db_name     = "voxpop"
 db_username = "voxpop_admin"
