@@ -18,7 +18,7 @@ variable "github_repo" {
 ```hcl
 variable "github_repos" {
   type    = list(string)
-  default = ["voxpop", "voxpop-infra"]
+  default = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 }
 
 # Trust policy now allows:
@@ -59,7 +59,7 @@ This generates:
 ### Option 1: Update terraform.tfvars (Recommended)
 ```hcl
 # In envs/beta/terraform.tfvars
-github_repos = ["voxpop", "voxpop-infra", "voxpop-frontend", "another-repo"]
+github_repos = ["voxpop-services", "voxpop-infra", "voxpop-web", "another-repo"]
 ```
 
 ### Option 2: Update Default in variables.tf
@@ -67,7 +67,7 @@ github_repos = ["voxpop", "voxpop-infra", "voxpop-frontend", "another-repo"]
 # In modules/iam/variables.tf
 variable "github_repos" {
   type    = list(string)
-  default = ["voxpop", "voxpop-infra", "new-repo"]
+  default = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 }
 ```
 

@@ -12,7 +12,7 @@ variable "github_org" {
 variable "github_repos" {
   description = "List of GitHub repository names allowed to assume the role"
   type        = list(string)
-  default     = ["voxpop", "voxpop-infra"]
+  default     = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 }
 
 variable "tags" {

@@ -16,12 +16,10 @@ TF_VAR_enable_vpc_flow_logs = false
 TF_VAR_allowed_cidr_blocks = ["0.0.0.0/0"]
 
 TF_VAR_github_org = guilhermeosaka
-TF_VAR_github_repos = ["voxpop", "voxpop-infra"]
+TF_VAR_github_repos = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 
 TF_VAR_db_name = voxpop
 TF_VAR_db_username = voxpop_admin
-
-
 
 TF_VAR_identity_container_image = nginx:latest
 TF_VAR_identity_container_port = 80
@@ -66,7 +64,7 @@ enable_vpc_flow_logs    = false
 allowed_cidr_blocks     = ["0.0.0.0/0"]
 
 github_org   = "guilhermeosaka"
-github_repos = ["voxpop", "voxpop-infra"]
+github_repos = ["voxpop-services", "voxpop-infra", "voxpop-web"]
 
 db_name     = "voxpop"
 db_username = "voxpop_admin"
